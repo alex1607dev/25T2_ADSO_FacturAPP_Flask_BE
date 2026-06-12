@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from src.models import Base, session
+from src.models.categorias import Categorias
 from sqlalchemy.orm import relationship
 
 class Productos(Base):  
@@ -7,15 +8,15 @@ class Productos(Base):
 
     id = Column(Integer, primary_key=True)
     codigo = Column(String(50), nullable=False)
-    Descripcion = Column(String(300), unique=True, nullable=False)
-    cantidad_inventario = Column(float, nullable=False)
-    precio_unitario = Column(float, nullable=False)
+    descripcion = Column(String(300), unique=True, nullable=False)
+    cantidad_inventario = Column(Float, nullable=False)
+    precio_unitario = Column(Float, nullable=False)
     unidad_medida = Column(String(3), nullable=False)
     id_categoria = Column(Integer, ForeignKey('categorias.id_categoria'), nullable=False)
 
-    def __init__(self, codigo, Descripcion, cantidad_inventario, precio_unitario, unidad_medida, id_categoria):
+    def __init__(self, codigo, descripcion, cantidad_inventario, precio_unitario, unidad_medida, id_categoria):
         self.codigo = codigo
-        self.Descripcion = Descripcion
+        self.descripcion = descripcion
         self.cantidad_inventario = cantidad_inventario
         self.precio_unitario = precio_unitario
         self.unidad_medida = unidad_medida

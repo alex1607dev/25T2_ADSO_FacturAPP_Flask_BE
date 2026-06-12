@@ -6,9 +6,9 @@ class Clientes(Base):
 
     id = Column(Integer, primary_key=True)
     nombre_completo = Column(String(300), nullable=False)
-    fecha_nacimiento = Column(Date (10), nullable=False)
-    cedula_ciudadania = Column(Integer(11), unique=True, nullable=False)
-    telefono = Column(Integer(10), nullable=False)
+    fecha_nacimiento = Column(Date, nullable=False)
+    cedula_ciudadania = Column(Integer, unique=True, nullable=False)
+    telefono = Column(Integer, nullable=False)
     direccion = Column(String(300), nullable=False)
     ciudad = Column(String(100), nullable=False)
 

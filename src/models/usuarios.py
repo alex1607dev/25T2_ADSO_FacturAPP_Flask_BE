@@ -7,7 +7,7 @@ class Usuarios(Base):
     id = Column(Integer, primary_key=True)
     nombre_completo = Column(String(300), nullable=False)
     usuario = Column(String(20), nullable=False)
-    cedula_ciudadania = Column(Integer(11), unique=True, nullable=False)
+    cedula_ciudadania = Column(Integer, unique=True, nullable=False)
     contraseña = Column(String(20), nullable=False)
     codigo_empleado = Column(String(11), nullable=False)
     rol = Column(String(20), nullable=False)

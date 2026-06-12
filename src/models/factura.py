@@ -1,28 +1,27 @@
 from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy.orm import relationship
 from src.models import Base, session
+from src.models.detalle_factura import Detalle_Factura
+
 
 class Factura(Base):  
     __tablename__ = 'factura'
 
     id = Column(Integer, primary_key=True)
-    id_factura = Column(Integer, unique = True, nullable=False)
     fecha = Column(Date, nullable=False)
     id_cliente = Column(Integer, ForeignKey('clientes.id'), nullable=False)
     id_usuario = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
     sub_total = Column(Float, nullable=False)
     iva = Column(Float, nullable=False)
     total = Column(Float, nullable=False)
-    id_detalle_factura = Column(Integer, ForeignKey('detalle_factura.id'), nullable=False)
 
-    def __init__(self, id_factura, fecha, id_cliente, id_usuario, sub_total, iva, total, id_detalle_factura):
-        self.id_factura = id_factura
+    def __init__(self, fecha, id_cliente, id_usuario, sub_total, iva, total,):
         self.fecha = fecha
         self.id_cliente = id_cliente
         self.id_usuario = id_usuario
         self.sub_total = sub_total
         self.iva = iva
         self.total = total
-        self.id_detalle_factura = id_detalle_factura
         
     def save(self):
         session.add(self)

@@ -1,18 +1,20 @@
 from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy.orm import relationship 
 from src.models import Base, session
 
 class Detalle_Factura(Base):  
+
     __tablename__ = 'detalle_factura'
 
     id = Column(Integer, primary_key=True)
-    id_detalle_factura = Column(Integer, unique = True, nullable=False)
+    id_factura = Column(Integer, ForeignKey('factura.id'), nullable=False)
     id_producto = Column(Integer, ForeignKey('productos.id'), nullable=False)
     cantidad = Column(Float, nullable=False)
     precio_unitario = Column(Float, nullable=False)
     sub_total = Column(Float, nullable=False)
 
-    def __init__(self, id_detalle_factura, id_producto, cantidad, precio_unitario, sub_total):
-        self.id_detalle_factura = id_detalle_factura
+    def __init__(self, id_factura, id_producto, cantidad, precio_unitario, sub_total):
+        self.id_factura = id_factura
         self.id_producto = id_producto
         self.cantidad = cantidad
         self.precio_unitario = precio_unitario
