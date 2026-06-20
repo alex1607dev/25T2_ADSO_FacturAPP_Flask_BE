@@ -33,6 +33,7 @@ class Factura(Base):
     
     def get_by_id(id):
         facturas = session.query(Factura).filter_by(id=id).first()
+        return facturas
     
     def delete(self):
         session.delete(self)

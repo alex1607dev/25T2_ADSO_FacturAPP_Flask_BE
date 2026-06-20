@@ -31,7 +31,8 @@ class Productos(Base):
         return productos
     
     def get_by_id(id):
-        productos = session.query(Productos).filter_by(id=id).first()
+        producto = session.query(Productos).filter_by(id=id).first()
+        return producto
     
     def delete(self):
         session.delete(self)

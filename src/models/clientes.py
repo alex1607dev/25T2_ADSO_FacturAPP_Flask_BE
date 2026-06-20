@@ -31,6 +31,7 @@ class Clientes(Base):
     
     def get_by_id(id):
         clientes = session.query(Clientes).filter_by(id=id).first()
+        return clientes
     
     def delete(self):
         session.delete(self)

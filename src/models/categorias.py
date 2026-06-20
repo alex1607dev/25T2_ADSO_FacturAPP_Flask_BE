@@ -20,6 +20,7 @@ class Categorias(Base):
     
     def get_by_id(id):
         categorias = session.query(Categorias).filter_by(id_categoria=id).first()
+        return categorias
     
     def delete(self):
         session.delete(self)
