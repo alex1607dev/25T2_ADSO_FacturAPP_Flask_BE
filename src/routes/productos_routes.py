@@ -67,6 +67,67 @@ def create_producto():
     if producto.id_categoria == '':
         return jsonify({'message': 'La categoria del producto es obligatoria'}), 400
     
-
     producto.save()
     return jsonify({'message':'Producto creado exitosamente'}), 201
+    
+
+@productos_bp.route('/<int:id>', methods=['PUT'])
+def update_producto(id):
+    producto = Productos.get_by_id(id)
+    if not producto:
+        return jsonify({'message': 'Producto no encontrado'}), 404
+    data = request.get_json()
+    if not data:
+        return jsonify({'message': 'el cuerpo de la solicitud no puede estar vacio'}), 400
+    campos_requeridos = ['codigo', 'descripcion', 'cantidad_inventario', 'precio_unitario', 'unidad_medida', 'id_categoria']
+    for campo in campos_requeridos:
+        if campo not in data:
+            return jsonify({'message': f'El campo {campo} es requerido'}), 400
+        
+    try:
+        precio = float(data['precio_unitario'])
+        if precio <= 0:
+            return jsonify({'message': 'El precio unitario del producto debe ser mayor a cero'}), 400
+    except (ValueError, TypeError):
+        return jsonify({'message': 'El precio unitario del producto debe ser un numero valido'}), 400
+    
+    try:
+        cantidad = int(data['cantidad_inventario'])
+        if cantidad <= 0:
+            return jsonify({'message': 'La cantidad de inventario no puede ser menor a cero'}), 400
+    except (ValueError, TypeError):
+        return jsonify({'message': 'La cantidad de inventario debe ser un numero entero valido'}), 400
+    
+    if str(data['descripcion']).strip() == '':
+        return jsonify({'message': 'La descripción del producto es obligatoria'}), 400
+    
+    if str(data['unidad_medida']).strip() == '':
+        return jsonify({'message': 'La unidad de medida del producto es obligatoria'}), 400
+
+    if not data['id_categoria']:
+        return jsonify({'message': 'La categoría del producto es obligatoria'}), 400
+
+    if producto:
+        producto.codigo = data['codigo']
+        producto.descripcion = data['descripcion']
+        producto.cantidad_inventario = data['cantidad_inventario']
+        producto.precio_unitario = data['precio_unitario']
+        producto.unidad_medida = data['unidad_medida']
+        producto.id_categoria = data['id_categoria']
+        producto.save()
+        return jsonify({'message': 'Producto actualizado exitosamente'}), 200
+    else:
+        return jsonify({'message': 'Producto no encontrado'}), 404
+
+
+@productos_bp.route('/<int:id>', methods=['DELETE'])
+def delete_producto(id):
+    producto = Productos.get_by_id(id)
+    if producto:
+        producto.delete()
+        return jsonify({'message': 'Producto eliminado exitosamente'}), 200
+    else:
+        return jsonify({'message': 'Producto no encontrado'}), 404  
+    
+
+

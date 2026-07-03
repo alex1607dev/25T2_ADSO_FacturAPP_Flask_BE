@@ -9,6 +9,8 @@ from src.routes import all_blueprints
 
 app = Flask(__name__)
 
+app.config['JSON_AS_ASCII'] = False
+
 Base.metadata.create_all(engine)
 
 prefix = '/api/v1'

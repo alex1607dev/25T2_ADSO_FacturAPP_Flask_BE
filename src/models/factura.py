@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from src.models import Base, session
 from src.models.detalle_factura import Detalle_Factura
@@ -8,7 +8,7 @@ class Factura(Base):
     __tablename__ = 'factura'
 
     id = Column(Integer, primary_key=True)
-    fecha = Column(Date, nullable=False)
+    fecha = Column(DateTime, nullable=False)
     id_cliente = Column(Integer, ForeignKey('clientes.id'), nullable=False)
     id_usuario = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
     sub_total = Column(Float, nullable=False)
