@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, func
 from sqlalchemy.orm import relationship
 from src.models import Base, session
 from src.models.detalle_factura import Detalle_Factura
@@ -38,3 +38,11 @@ class Factura(Base):
     def delete(self):
         session.delete(self)
         session.commit()    
+
+    def to_dict(self):
+        return{column.name: getattr(self, column.name) for column in self.__table__.columns}
+
+    def paginate (page=1, per_page=5):
+        total = (session.query(func.count(Factura.id)).scalar())
+        factura = session.query(Factura).offset((page - 1)* per_page).limit(per_page).all()
+        return factura, total

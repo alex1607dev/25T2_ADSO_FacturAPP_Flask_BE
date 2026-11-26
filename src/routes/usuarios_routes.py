@@ -5,6 +5,25 @@ usuarios_bp = Blueprint('usuarios', __name__)
 
 @usuarios_bp.route('/', methods=['GET'])
 def get_all_usuarios():
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get ('per_page', default=5, type=int)
+
+    usuarios, total = Usuarios.paginate(page=page, per_page=per_page)
+
+    total_page = (total + per_page - 1) // per_page # calcular el número total de páginas
+
+    return jsonify({
+        'data': [usuario.to_dict() for usuario in usuarios],
+        'meta': {
+            'page': page,
+            'per_page': per_page,
+            'total': total,
+            'total_page': total_page,
+            'has_next': page < total_page,
+            'has_prev': page > 1
+        } 
+    }), 200
+
     usuarios = Usuarios.get()
     usuarios_list = []
     for usuario in usuarios:
@@ -52,7 +71,7 @@ def create_usuarios():
         return jsonify({'message': 'El nombre del usuario es obligatorio'}), 400
     if usuarios.usuario.strip()== '':
         return jsonify({'message': 'El usuario del usuario es obligatorio'}), 400
-    if usuarios.cedula_ciudadania <= 0:
+    if int (usuarios.cedula_ciudadania) <= 0:
         return jsonify({'message': 'El cedula ciudadania del usuario debe ser mayor a cero'}), 400
     if usuarios.contraseña.strip()== '':
         return jsonify({'message': 'La contraseña del usuario es obligatoria'}), 400

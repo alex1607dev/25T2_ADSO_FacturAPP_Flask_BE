@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, func
 from src.models import Base, session
 
 class Usuarios(Base):  
@@ -36,3 +36,11 @@ class Usuarios(Base):
     def delete(self):
         session.delete(self)
         session.commit()    
+
+    def to_dict(self):
+        return{column.name: getattr(self, column.name) for column in self.__table__.columns}
+
+    def paginate (page=1, per_page=5):
+        total = (session.query(func.count(Usuarios.id)).scalar())
+        usuarios = session.query(Usuarios).offset((page - 1)* per_page).limit(per_page).all()
+        return usuarios, total

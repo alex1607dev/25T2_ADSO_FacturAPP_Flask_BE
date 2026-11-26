@@ -6,6 +6,25 @@ categorias_bp = Blueprint('categorias', __name__)
 
 @categorias_bp.route('/', methods=['GET'])
 def get_all_categorias():
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get ('per_page', default=5, type=int)
+
+    categorias, total = Categorias.paginate(page=page, per_page=per_page)
+
+    total_page = (total + per_page - 1) // per_page # calcular el número total de páginas
+
+    return jsonify({
+        'data': [categoria.to_dict() for categoria in categorias],
+        'meta': {
+            'page': page,
+            'per_page': per_page,
+            'total': total,
+            'total_page': total_page,
+            'has_next': page < total_page,
+            'has_prev': page > 1
+        } 
+    }), 200
+
     categorias = Categorias.get()
     categorias_list = []
     for categoria in categorias:
@@ -30,19 +49,38 @@ def get_categorias(id):
 
 @categorias_bp.route('/', methods=['POST'])
 def create_categorias():
+    # 1. Obtener los datos del JSON una sola vez
     data = request.get_json()
-    categorias = Categorias(
-    nombre_categoria = data['nombre_categoria']
-    )
-
-    if Categorias.nombre.strip()== '':
-        return jsonify({'message': 'El nombre de la categoría es obligatorio'}), 400
-
-    if len(categorias.nombre) > 50:
-        return jsonify({'message': 'El nombre de la categoría no puede superar los 50 caracteres'}), 400
     
-    categorias.save()
-    return jsonify({'message':'Categoria creada exitosamente'}), 201
+    # Validar que el JSON no venga vacío o mal formado
+    if not data:
+        return jsonify({'message': 'El cuerpo de la solicitud no puede estar vacío'}), 400
+
+    # 2. Validar que el campo exista en el JSON
+    if 'nombre_categoria' not in data:
+        return jsonify({'message': 'El campo "nombre_categoria" es obligatorio'}), 400
+
+    # 3. Extraer y limpiar el valor real
+    nombre_limpio = str(data['nombre_categoria']).strip()
+
+    # 4. Validaciones de reglas de negocio
+    if nombre_limpio == '':
+        return jsonify({'message': 'El nombre de la categoría no puede estar vacío'}), 400
+
+    if len(nombre_limpio) > 50:
+        return jsonify({'message': 'El nombre de la categoría no puede superar los 50 caracteres'}), 400
+
+    # 5. Si todo está bien, crear el objeto y guardarlo
+    try:
+        # Nota: Si tu base de datos autoincrementa el ID, quita el id_categoria=1 aquí
+        # Si necesitas forzar el ID 1, puedes pasarlo así:
+        nueva_categoria = Categorias(
+            nombre_categoria=nombre_limpio
+        )
+        nueva_categoria.save()
+        return jsonify({'message': 'Categoría creada exitosamente'}), 201
+    except Exception as e:
+        return jsonify({'message': 'Error al crear la categoría', 'error': str(e)}), 500
 
 
 @categorias_bp.route('/<int:id>', methods=['PUT'])

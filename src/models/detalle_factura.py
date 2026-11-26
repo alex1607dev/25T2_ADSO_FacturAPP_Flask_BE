@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, func
 from sqlalchemy.orm import relationship 
 from src.models import Base, session
 
@@ -35,3 +35,4 @@ class Detalle_Factura(Base):
     def delete(self):
         session.delete(self)
         session.commit()    
+

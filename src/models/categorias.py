@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, func
 from src.models import Base, session
 
 class Categorias(Base):  
@@ -25,3 +25,11 @@ class Categorias(Base):
     def delete(self):
         session.delete(self)
         session.commit()
+
+    def to_dict(self):
+        return{column.name: getattr(self, column.name) for column in self.__table__.columns}
+
+    def paginate (page=1, per_page=5):
+        total = (session.query(func.count(Categorias.id_categoria)).scalar())
+        categorias = session.query(Categorias).offset((page - 1)* per_page).limit(per_page).all()
+        return categorias, total

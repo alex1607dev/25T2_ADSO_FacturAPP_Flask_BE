@@ -6,7 +6,25 @@ productos_bp = Blueprint('productos', __name__)
 
 @productos_bp.route('/', methods=['GET'])
 def get_all_productos():
-    productos = Productos.get()
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get ('per_page', default=5, type=int)
+
+    productos, total = Productos.paginate(page=page, per_page=per_page)
+
+    total_page = (total + per_page - 1) // per_page # calcular el número total de páginas
+
+    return jsonify({
+        'data': [producto.to_dict() for producto in productos],
+        'meta': {
+            'page': page,
+            'per_page': per_page,
+            'total': total,
+            'total_page': total_page,
+            'has_next': page < total_page,
+            'has_prev': page > 1
+        } 
+    }), 200
+    
     productos_list = []
     for producto in productos:
         productos_list.append({

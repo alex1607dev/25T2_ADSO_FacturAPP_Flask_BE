@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, func
 from src.models import Base, session
 from src.models.categorias import Categorias
 from sqlalchemy.orm import relationship
@@ -13,6 +13,7 @@ class Productos(Base):
     precio_unitario = Column(Float, nullable=False)
     unidad_medida = Column(String(3), nullable=False)
     id_categoria = Column(Integer, ForeignKey('categorias.id_categoria'), nullable=False)
+    categoria = relationship("Categorias")
 
     def __init__(self, codigo, descripcion, cantidad_inventario, precio_unitario, unidad_medida, id_categoria):
         self.codigo = codigo
@@ -37,3 +38,11 @@ class Productos(Base):
     def delete(self):
         session.delete(self)
         session.commit()
+
+    def to_dict(self):
+        return{column.name: getattr(self, column.name) for column in self.__table__.columns}
+
+    def paginate (page=1, per_page=5):
+        total = (session.query(func.count(Productos.id)).scalar())
+        productos = session.query(Productos).offset((page - 1)* per_page).limit(per_page).all()
+        return productos, total

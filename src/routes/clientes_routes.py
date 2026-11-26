@@ -6,6 +6,25 @@ clientes_bp = Blueprint('clientes', __name__)
 
 @clientes_bp.route('/', methods=['GET'])
 def get_all_clientes():
+    page = request.args.get('page', default=1, type=int)
+    per_page = request.args.get ('per_page', default=5, type=int)
+    
+    clientes, total = Clientes.paginate(page=page, per_page=per_page)
+    
+    total_page = (total + per_page - 1) // per_page # calcular el número total de páginas
+    
+    return jsonify({
+        'data': [cliente.to_dict() for cliente in clientes],
+        'meta': {
+            'page': page,
+            'per_page': per_page,
+            'total': total,
+            'total_page': total_page,
+            'has_next': page < total_page,
+            'has_prev': page > 1
+            } 
+        }), 200
+
     clientes = Clientes.get()
     clientes_list = []
     for cliente in clientes:
@@ -51,9 +70,9 @@ def create_clientes():
 
     if clientes.nombre_completo.strip()== '':
         return jsonify({'message': 'El nombre completo del cliente es obligatorio'}), 400    
-    if clientes.cedula_ciudadania <= 0:
-        return jsonify({'message': 'El cedula ciudadania del cliente debe ser mayor a cero'}), 400
-    if clientes.telefono <= 0:
+    if int (clientes.cedula_ciudadania) <= 0:
+        return jsonify({'message': 'El cedula ciudadania del cliente debe ser mayor a cero'}), 400  
+    if int (clientes.telefono) <= 0:
         return jsonify({'message': 'El telefono del cliente debe ser mayor a cero'}), 400
     if clientes.direccion == '':
         return jsonify({'message': 'La direccion del cliente es obligatoria'}), 400
