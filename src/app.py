@@ -1,7 +1,9 @@
 from flask import Flask
 from src.models import Base, engine
 from src.models.clientes import Clientes
+from src.models.usuarios import Usuarios
 from src.models.productos import Productos
+from src.models.factura import Factura
 from src.routes import all_blueprints
 import os
 from dotenv import load_dotenv
@@ -27,6 +29,8 @@ for bp in all_blueprints:
 @app.route('/')
 def salud():
     return {'estado': 'ok', 'servicio': 'facturapp-api'}, 200
+
+print("RUTAS REGISTRADAS:", app.url_map)
 
 if __name__ == '__main__':
     puerto = int(os.environ.get('PORT', 5000))
